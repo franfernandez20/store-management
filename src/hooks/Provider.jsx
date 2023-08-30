@@ -1,53 +1,52 @@
 import { createContext, useEffect, useReducer } from "react";
-
-// const views = [
-//   "View A",
-//   "View B",
-//   "View C",
-// ];
+import { useGlobalContextProvider } from "./useGlobalContextProvider";
+// import { useGlobalContextProvider } from "./useGlobalContextProvider";
 
 const initialState = {
-  countGlobal: 0,
   count: 0,
-  views: [],
+  list: [],
+  name: "",
   data: {
-    proposal: null,
-    requestEvent: null,
-    requestSession: null,
+    nested1: null,
+    nested2: null,
   },
-  setCountGlobal: () => {},
   setCount: () => {},
-  setView: () => {},
-  addView: () => {},
-  removeView: () => {},
-  setProposal: () => {},
-  setRequestEvent: () => {},
-  setRequestSession: () => {},
-  incrementCount: () => {},
+  setName: () => {},
+  setList: () => {},
+  addList: () => {},
+  removeList: () => {},
   runSomething: () => {},
 };
 
 const reducer = (state, { type, value }) => {
   switch (type) {
-    case "set-count-global":
-      return { ...state, countGlobal: value };
-    case "set-count":
-      return { ...state, count: value };
-    case "set-view":
-      return { ...state, views: value };
-    case "add-view":
-      return { ...state, views: [...state.views, value] };
-    case "remove-view":
+    case "initState":
       return {
         ...state,
-        views: state.views.filter((view) => view !== value),
+        count: value?.count || state.count,
+        list: value?.list || state.list,
+        name: value?.name || state.name,
+        data: value?.data || state.data,
       };
-    case "set-proposal":
-      return { ...state, data: { ...state.data, proposal: value } };
-    case "set-request-event":
-      return { ...state, data: { ...state.data, requestEvent: value } };
-    case "set-request-session":
-      return { ...state, data: { ...state.data, requestSession: value } };
+    case "set-count":
+      return { ...state, count: value };
+    case "set-list":
+      return { ...state, list: value };
+    case "add-list":
+      return { ...state, list: [...state.list, value] };
+    case "remove-list":
+      return {
+        ...state,
+        list: state.list.filter((item) => item !== value),
+      };
+    case "set-name":
+      return { ...state, name: value };
+    case "set-data":
+      return { ...state, data: value };
+    case "set-nested1":
+      return { ...state, data: { ...state.data, nested1: value } };
+    case "set-nested2":
+      return { ...state, data: { ...state.data, nested2: value } };
     case "increment-count":
       return { ...state, count: state.count + 1 };
     case "run-something":
@@ -61,51 +60,58 @@ const reducer = (state, { type, value }) => {
 const Context = createContext(initialState);
 
 const Provider = ({ children }) => {
+  const { user } = useGlobalContextProvider();
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { countGlobal, count, views, data } = state;
+  const { name, count, list, data } = state;
+
+  const setState = (value) => {
+    dispatch({ type: "initState", value });
+  };
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch("http://localhost:3100/views");
+      console.log("Loading data for userId: ", user.id);
+      const res = await fetch(`http://localhost:3100/data/${user.id || 0}`);
       const data = await res.json();
       console.log("Data from server in Provider: ", data);
-      dispatch({ type: "set-view", value: data });
+      setState(data);
     };
     fetchData();
-  }, []);
+  }, [user.id]);
 
   const value = {
-    countGlobal,
-    setCountGlobal: (count) => {
-      dispatch({ type: "set-count-global", value: count });
-    },
     count,
     setCount: (count) => {
       dispatch({ type: "set-count", value: count });
     },
-    views,
-    setView: (views) => {
-      dispatch({ type: "set-view", value: views });
+    list,
+    setList: (list) => {
+      dispatch({ type: "set-list", value: list });
     },
-    addView: (view) => {
-      dispatch({ type: "add-view", value: view });
+    addList: (item) => {
+      dispatch({ type: "add-list", value: item });
     },
-    removeView: (view) => {
-      dispatch({ type: "remove-view", value: view });
+    removeList: (item) => {
+      dispatch({ type: "remove-list", value: item });
+    },
+    name,
+    setName: (name) => {
+      dispatch({ type: "set-name", value: name });
     },
     data,
-    setProposal: (proposal) => {
-      dispatch({ type: "set-proposal", value: proposal });
+    setData: (data) => {
+      dispatch({ type: "set-data", value: data });
     },
-    setRequestEvent: (requestEvent) => {
-      dispatch({ type: "set-request-event", value: requestEvent });
+    setNested1: (nested1) => {
+      dispatch({ type: "set-nested1", value: nested1 });
     },
-    setRequestSession: (requestSession) => {
-      dispatch({ type: "set-request-session", value: requestSession });
+    setNested2: (nested2) => {
+      dispatch({ type: "set-nested2", value: nested2 });
     },
     incrementCount: () => {
       dispatch({ type: "increment-count" });
     },
+
     runSomething: () => {
       dispatch({ type: "run-something" });
     },

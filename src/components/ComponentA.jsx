@@ -1,49 +1,82 @@
 import { useState } from "react";
 import { useContextProvider } from "../hooks/useContextProvider";
+import "../App.css";
+import { Provider } from "../hooks/Provider";
+import { useGlobalContextProvider } from "../hooks/useGlobalContextProvider";
 
 function ComponentA() {
-  const [myview, setMyView] = useState("");
-  const { count, views, addView, countGlobal, incrementCount } =
-    useContextProvider();
+  console.log("ComponentA");
+  return (
+    <Provider>
+      <ComponentAContent />
+    </Provider>
+  );
+}
 
-  const handleAddView = async () => {
-    const res = await fetch("http://localhost:3100/views", {
+function ComponentAContent() {
+  const [myList, setMyList] = useState("");
+  const { user } = useGlobalContextProvider();
+  const state = useContextProvider();
+  const { count, list, name, setName, addList, incrementCount } = state;
+
+  const handleSave = async () => {
+    const res = await fetch("http://localhost:3100/data", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ view: myview }),
+      body: JSON.stringify({ id: user?.id, ...state }),
     });
     const data = await res.json();
-
     console.log(data);
-    addView(data);
-    setMyView("");
   };
 
   return (
     <>
-      <h1>Component A</h1>
-      <div>
-        {count}
-        <button onClick={incrementCount}>Increment</button>
+      <div className="card">
+        <h2>Component A</h2>
+        <div className="vstack">
+          {count}
+          <button onClick={incrementCount}>Increment</button>
+        </div>
+      </div>
+      <div className="card">
+        <div className="vstack">
+          <input
+            placeholder="Name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+      </div>
+      <div className="card">
+        <div className="vstack">
+          <h2>Views: </h2>
+          <ul>
+            {list.map((view) => (
+              <li key={view}>{view}</li>
+            ))}
+          </ul>
+        </div>
+        <div className="vstack">
+          <input
+            type="text"
+            value={myList}
+            onChange={(e) => setMyList(e.target.value)}
+          />
+          <button
+            onClick={() => {
+              addList(myList);
+              setMyList("");
+            }}
+          >
+            Add
+          </button>
+        </div>
       </div>
       <div>
-        <h2>Views: </h2>
-        <ul>
-          {views.map((view) => (
-            <li key={view}>{view}</li>
-          ))}
-        </ul>
-      </div>
-
-      <div>
-        <input
-          type="text"
-          value={myview}
-          onChange={(e) => setMyView(e.target.value)}
-        />
-        <button onClick={handleAddView}>Add</button>
+        <button onClick={handleSave}>Save</button>
       </div>
     </>
   );

@@ -1,12 +1,12 @@
 // db.js
-const items = [];
+let items = [];
 
 function getAllItems() {
   return items;
 }
 
 function addItem(item) {
-  items.push(item);
+  items = [...items.filter(i => i.id !== item.id), item];
 }
 
 export {

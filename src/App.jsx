@@ -1,54 +1,69 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
 
 import { Link, Route } from "wouter";
 import ComponentA from "./components/ComponentA";
 import ComponentB from "./components/ComponentB";
-import { Provider } from "./hooks/Provider";
-import { useContextProvider } from "./hooks/useContextProvider";
+import { GlobalProvider } from "./hooks/GlobalProvider";
+import { useGlobalContextProvider } from "./hooks/useGlobalContextProvider";
 
 function App() {
   return (
-    <Provider>
+    <GlobalProvider>
       <Main />
-      <Route path="/a" component={ComponentA} />
+      <Route path="/a">
+        <ComponentA />
+      </Route>
       <Route path="/b">
         <ComponentB />
       </Route>
-    </Provider>
+    </GlobalProvider>
   );
 }
 
 export default App;
 
 const Main = () => {
-  const { countGlobal, setCount } = useContextProvider();
+  const { user, setUser } = useGlobalContextProvider();
+  const [newId, setNewId] = useState(0);
   return (
     <>
-      <div>
-        <a>
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a>
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h2>Global count is: {countGlobal}</h2>
       <div className="card">
-        <button onClick={() => setCount(0)}>Reset local count</button>
+        <div className="vstack">
+          <h3>User id: {user.id}</h3>
+        </div>
+        <div className="vstack">
+          <input
+            type="number"
+            value={newId}
+            onChange={(e) => setNewId(e.target.value)}
+          />
+          <button
+            onClick={() =>
+              setUser({
+                name: "user-" + newId,
+                id: newId,
+                function: () => {
+                  console.log("user function RUN");
+                },
+              })
+            }
+          >
+            Change
+          </button>
+        </div>
       </div>
-      <div>
+
+      <hr></hr>
+      <div className="vstack">
         <Link href="/a">
           <a className="link">Page A</a>
         </Link>
-      </div>
-      <div>
         <Link href="/b">
           <a className="link">Page B</a>
         </Link>
       </div>
+      <hr></hr>
     </>
   );
 };

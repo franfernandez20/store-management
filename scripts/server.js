@@ -11,16 +11,25 @@ app.use(json());
 // Use the cors middleware
 app.use(cors());
 
-app.get('/views', (req, res) => {
+app.get('/data', (req, res) => {
   const items = getAllItems();
-  res.json(items);
+  res.json(items || []);
 });
 
-app.post('/views', (req, res) => {
+app.get('/data/:id', (req, res) => {
+  const items = getAllItems();
+  console.log('Request Id: ', req.params.id)
+  const item = items.find(item => item.id === req.params.id);
+  console.log('Item: ', item)
+  res.json(item || {});
+});
+
+
+app.post('/data', (req, res) => {
   const newItem = req.body;
-  console.log('newItem: ', newItem)
-  addItem(newItem.view);
-  res.status(201).json(newItem.view);
+  console.log('Data: ', newItem)
+  addItem(newItem);
+  res.status(201).json(newItem);
 });
 
 app.listen(port, () => {
