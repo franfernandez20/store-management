@@ -4,12 +4,12 @@ import "./App.css";
 import { Link, Route } from "wouter";
 import ComponentA from "./components/ComponentA";
 import ComponentB from "./components/ComponentB";
-import { GlobalProvider } from "./hooks/GlobalProvider";
+import { RecoilRoot } from "recoil";
 import { useGlobalContextProvider } from "./hooks/useGlobalContextProvider";
 
 function App() {
   return (
-    <GlobalProvider>
+    <RecoilRoot>
       <Main />
       <Route path="/a">
         <ComponentA />
@@ -17,7 +17,7 @@ function App() {
       <Route path="/b">
         <ComponentB />
       </Route>
-    </GlobalProvider>
+    </RecoilRoot>
   );
 }
 

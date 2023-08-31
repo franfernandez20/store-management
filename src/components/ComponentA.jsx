@@ -1,21 +1,16 @@
 import { useState } from "react";
 import { useContextProvider } from "../hooks/useContextProvider";
 import "../App.css";
-import { Provider } from "../hooks/Provider";
 import { useGlobalContextProvider } from "../hooks/useGlobalContextProvider";
 
 function ComponentA() {
-  console.log("ComponentA");
-  return (
-    <Provider>
-      <ComponentAContent />
-    </Provider>
-  );
+  return <ComponentAContent />;
 }
 
 function ComponentAContent() {
   const [myList, setMyList] = useState("");
   const { user } = useGlobalContextProvider();
+  console.log("User in Child: ", user);
   const state = useContextProvider();
   const { count, list, name, setName, addList, incrementCount } = state;
 

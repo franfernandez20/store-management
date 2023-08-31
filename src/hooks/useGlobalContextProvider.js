@@ -1,6 +1,8 @@
-import { useContext } from "react";
-import { GlobalContext } from "./GlobalProvider";
+import { useRecoilState } from 'recoil'
+import { userAtom } from '../recoil/global-states';
+
 
 export const useGlobalContextProvider = () => {
-  return useContext(GlobalContext);
-};
+  const [user, setUser] = useRecoilState(userAtom);
+  return { user, setUser }
+}
