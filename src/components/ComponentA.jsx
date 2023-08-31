@@ -1,22 +1,18 @@
 import { useState } from "react";
-import { useContextProvider } from "../hooks/useContextProvider";
 import "../App.css";
-import { Provider } from "../hooks/Provider";
 import { useGlobalContextProvider } from "../hooks/useGlobalContextProvider";
+import { useContextProvider } from "../hooks/useContextProvider";
 
 function ComponentA() {
-  console.log("ComponentA");
-  return (
-    <Provider>
-      <ComponentAContent />
-    </Provider>
-  );
+  return <ComponentAContent />;
 }
 
 function ComponentAContent() {
   const [myList, setMyList] = useState("");
   const { user } = useGlobalContextProvider();
+  console.log("user in child: ", user);
   const state = useContextProvider();
+  console.log("state", state);
   const { count, list, name, setName, addList, incrementCount } = state;
 
   const handleSave = async () => {
@@ -54,7 +50,7 @@ function ComponentAContent() {
         <div className="vstack">
           <h2>Views: </h2>
           <ul>
-            {list.map((view) => (
+            {list?.map((view) => (
               <li key={view}>{view}</li>
             ))}
           </ul>

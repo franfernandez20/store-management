@@ -1,23 +1,27 @@
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import "./App.css";
 
 import { Link, Route } from "wouter";
 import ComponentA from "./components/ComponentA";
 import ComponentB from "./components/ComponentB";
-import { GlobalProvider } from "./hooks/GlobalProvider";
 import { useGlobalContextProvider } from "./hooks/useGlobalContextProvider";
+import { Provider } from "jotai";
 
 function App() {
   return (
-    <GlobalProvider>
+    <Provider>
       <Main />
-      <Route path="/a">
-        <ComponentA />
-      </Route>
-      <Route path="/b">
-        <ComponentB />
-      </Route>
-    </GlobalProvider>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Route path="/a">
+          <ComponentA />
+        </Route>
+        <Route path="/b">
+          <Provider>
+            <ComponentB />
+          </Provider>
+        </Route>
+      </Suspense>
+    </Provider>
   );
 }
 
@@ -25,6 +29,7 @@ export default App;
 
 const Main = () => {
   const { user, setUser } = useGlobalContextProvider();
+  console.log("user MAIN: ", user);
   const [newId, setNewId] = useState(0);
   return (
     <>
